@@ -1,0 +1,1 @@
+He needs to add his test cases his input and output results, and whether he has done the bonus problem for concordance. And also the 2nd assignment with SQL queries, I don’t see it in the github.

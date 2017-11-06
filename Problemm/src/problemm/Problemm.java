@@ -5,14 +5,27 @@
  */
 package problemm;
 
-/* Applied StringTokenizer to Split the String but it restricted me to extract previous element, so reverted to String SPLIT.
-   Used TreeSet because it's sorted but Object cannot be compared in a set, so moved to TreeMap to Key value pair
-   Created Object Class to track count of each word and used ArrayList good enough to track sentence count.
-   Summary: Splitted the String, passed each word to object class, added String and Object as Key Value pair in TreeMap.   
-   Applied Conditions and String Manipulation logic for sentence break and managing delimiters. Please go through comments for code functionality.    
+/* Applied StringTokenizer to Split the String but it restricted me to extract 
+previous element, so reverted to String SPLIT.
+   Used TreeSet because it's sorted but Object cannot be compared in a set, so 
+moved to TreeMap to Key value pair
+   Created Object Class to track count of each word and used ArrayList good 
+enough to track sentence count.
+   Summary: Splitted the String, passed each word to object class, added String 
+and Object as Key Value pair in TreeMap.   
+   Applied Conditions and String Manipulation logic for sentence break and 
+managing delimiters. Please go through comments for code functionality.
+Input and output is applied to make test cases
 */
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Formatter;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -32,37 +45,68 @@ public class Problemm {
 // Automatically sorts the elements according to key    
     static TreeMap<String,Object> set = new TreeMap<>();
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
+       
+        //Please change the file name Accordingly from 1 to 5 Text files, to test Output
+        File fl = new File("TestInput_4.txt");
+        FileReader fr= new FileReader(fl);
+        BufferedReader br = new BufferedReader(fr);
+            try{
+                String file = br.readLine();
+                //Static Method
+                concardance(file);   
+            }
+            catch(Exception e){
+                System.out.println(e);
+            }finally{
+                br.close();
+            }
         
-        String file ="Given an arbitrary text document written in English, write a program that will generate a concordance, i.e. "
-                + "an alphabetical list of all word occurrences, labeled with word frequencies. "
-                + "Bonus: label each word with the sentence numbers in which each occurrence appeared.";
         
-            concardance(file);   //Static Method
-            print();        //prints result         
+        File fle = new File("TestOutput_4.txt");
+        FileWriter fw= new FileWriter(fle);
+        BufferedWriter bw = new BufferedWriter(fw); 
+            try{
+                ArrayList<String> list3 = print();
+                    for(String st: list3){
+                        bw.write(st);                        
+                    }
+            }
+            catch(Exception e){
+                System.out.println(e);
+            }finally{
+                bw.flush();
+                bw.close();            
+            }                        
     }
+
     
     public static void concardance(String file){
-        
-       
-        String[] tr = file.split(" ");     // Splits String from WhiteSpace, to put in Array
+     
+       // Splits String from WhiteSpace, to put in Array
+        String[] tr = file.split(" ");     
         
         for(int i=0; i<tr.length;i++){
             
             String str = tr[i];
             
-            String checker = "check";         //prevents NullPointerException         
+            //prevents NullPointerException
+            String checker = "check";                  
             
+            //prevents ArrayIndexException
             if(i>0){
-            checker = tr[i-1];                //prevents ArrayIndexException  
+            checker = tr[i-1];                 
             }
          
             int length = str.length();             
                              
             Object obj;
             
-            if(!Character.isLetter(str.charAt(length-1))){                   //Not a Letter
-            obj = new Object(str.substring(0,length-1).toLowerCase());       //Eliminates delimiter's   
+             //Not a Letter
+            if(str.length()>0 && !Character.isLetter(str.charAt(length-1))){ 
+                
+            //Eliminates delimiter's
+            obj = new Object(str.substring(0,length-1).toLowerCase());          
             }
             else{
             obj = new Object(str.toLowerCase());                                 
@@ -74,11 +118,12 @@ public class Problemm {
             
             obj.setcount();
             obj.setsentencecount(sentencecount);
-            set.put(str.toLowerCase(),obj);                           //Adding to TreeMap 
+            //Adding to TreeMap
+            set.put(str.toLowerCase(),obj);                            
          
-            //Checks Sentence break
-            
-            if(Character.isUpperCase(str.charAt(0)) && !Character.isLetter(checker.charAt((checker.length())-1))){     
+            //Checks Sentence break            
+            if(Character.isUpperCase(str.charAt(0)) && 
+                    !Character.isLetter(checker.charAt((checker.length())-1))){     
                 sentencecount++;                                                                          
             }                                                   
             
@@ -86,60 +131,82 @@ public class Problemm {
     
     }
     
-    public static void print(){
-    
-        int num = 0;       //Will be passed in Ascii method
+    public static ArrayList<String> print(){
+        
+        //Will be passed in Ascii method 
+        int num = 0;       
        
         Set<String> key = set.keySet();
         
-        for(String value : key){                                  //Key Iteration
+        //ArrayList to save each String
+        ArrayList<String> list2 = new ArrayList<>();
+        
+        //Key Iteration
+        for(String value : key){                                  
             Object obj = set.get(value);
             
-            String sentence = obj.getsentencecount().toString();                             //Sentence count of each object
+            //Sentence count of each object
+            String sentence = obj.getsentencecount().toString();                             
             
-            sentence = sentence.substring(1, sentence.length()-1).replaceAll("\\s","");      //Elmiminates Character
+            //Elmiminates Character
+            sentence = sentence.substring(1, sentence.length()-1).replaceAll("\\s","");      
+            Formatter formatter = new Formatter();                                           
+                String st= formatter.format("%s %8s %12s", Ascii(num)+".", 
+                        obj.getword(), "{" + obj.getcount() + ":" 
+                                + sentence + "}\r\n").toString();
+                
+                //Add each String to ArrayList
+                list2.add(st);
+            num++;
             
-            System.out.printf("%-5s %-20s %-20s", Ascii(num)+".", obj.getword(), "{" + obj.getcount() + ":" + sentence + "}");  //printing result
-            System.out.println();     //line break
-            
-            num++;       
         }
+        
+        //returns ArrayList
+        return list2;
     }
     
     public static String Ascii(int num){
-              
-        StringBuilder sb = new StringBuilder();                  //Joins the String and character     
+        
+        //Joins the String and character
+        StringBuilder sb = new StringBuilder();                       
            
             int remainder = num % 26;
-            char letter = (char) (remainder + 97);               // Lowercase letter begins from 97 in ASCII format 
+            
+            // Lowercase letter begins from 97 in ASCII format
+            char letter = (char) (remainder + 97);                
             
             for(int i=num/26; i>=0; i--) {
-                    sb.append(letter);                           //Appends same letter
+                //Appends same letter
+                    sb.append(letter);                           
             }
-            return sb.toString();
+            return sb.toString(); 
         }
      
     }
 
-
-    class Object{                                  //Default Modifier
+    //Default Modifier
+    class Object{                                  
     
     private String word;                                
     private int count;
     private ArrayList<Integer> list;                         
     
-    Object(){                               // Default Constructor
+    // Default Constructor
+    Object(){                               
     }
     
-    Object(String word){                    //Constructor  
+    //Constructor
+    Object(String word){                      
     this.word = word;
     this.list = new ArrayList<>();
     }
     
     
     // Setter/Getter    
-     
-    void setcount(){         //increment by 1
+    
+    
+    //increment by 1
+    void setcount(){         
      this.count++;   
     }
     
@@ -147,7 +214,8 @@ public class Problemm {
         return count;
     }
     
-    void setsentencecount(int num){          //Sets sentence count
+    //Sets sentence count
+    void setsentencecount(int num){          
     this.list.add(num);
     }
     

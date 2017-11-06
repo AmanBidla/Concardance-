@@ -1,0 +1,1 @@
+I was able to see the input text he has in the program, I need his testing output or screenshots on the concordance, no need of Junit but if he can do it quickly then it will benefit him.

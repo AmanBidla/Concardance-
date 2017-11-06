@@ -1,0 +1,2 @@
+I submitted my SQL Assignment in a Zip folder. I copied all the queries into the word file and it also consists screenshot of each SQL query execution in the zip folder. Please receive Script file attached with this email which contains queries as well.Do she wants me to make test cases in JUnit Testing for the Java Code?yes, I have done bonus part for the concordance program.Concordance program uploaded in the Repository named Concardance in my Github.
+
